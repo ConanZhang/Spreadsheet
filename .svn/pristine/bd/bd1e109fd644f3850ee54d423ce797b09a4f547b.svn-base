@@ -1,0 +1,296 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using SS;
+
+namespace SpreadsheetGUI
+{
+    /// <summary>
+    /// Main code for spreadsheet GUI operation.
+    /// </summary>
+    public partial class GUI : Form
+    {
+        //data structure behind GUI
+        private Spreadsheet ss;
+
+        //used to store previous cell for entry
+        private int prevCol;
+        private int prevRow;
+
+        /// <summary>
+        /// GUI constructor.
+        /// </summary>
+        public GUI()
+        {
+            InitializeComponent();
+
+            ss = new Spreadsheet(s => true, s => s, "ps6");
+            prevCol = 0;
+            prevRow = 0;
+
+            //focus on contents
+            this.ActiveControl = contentsBox;
+
+            //add functionality for when user selects cell
+            spreadsheetPanel.SelectionChanged += cellSelected;
+
+            //default selection is A1
+            spreadsheetPanel.SetSelection(0, 0);
+            nameBox.Text = "A1";
+        }
+
+        /// <summary>
+        /// Actions for when a cell is selected
+        /// </summary>
+        /// <param name="ss">spread sheet that selected cell is in</param>
+        private void cellSelected(SpreadsheetPanel ssp)
+        {
+            //clear value display
+            valueBox.Text = "";
+
+            if(contentsBox.Text != "")
+            {
+                //set contents of cell
+                foreach (string name in ss.SetContentsOfCell(IntToString(prevCol) + (prevRow + 1).ToString(), contentsBox.Text))
+                {
+                    //get name
+                    int col = (int)name[0] % 32 - 1;
+                    int row;
+                    bool intParse = Int32.TryParse(name.Remove(0, 1), out row);
+
+                    //set display value
+                    spreadsheetPanel.SetValue(col, row - 1, ss.GetCellValue(name).ToString());
+                }
+
+                string value = ss.GetCellValue(IntToString(prevCol) + (prevRow + 1).ToString()).ToString();
+                //set display value to cell value
+                spreadsheetPanel.SetValue(prevCol, prevRow, value);
+
+                //set display value
+                valueBox.Text = value;
+            }
+            //determine current selected cell
+            spreadsheetPanel.GetSelection(out prevCol, out prevRow);
+
+            //display current cell value
+            valueBox.Text = ss.GetCellValue(IntToString(prevCol) + (prevRow + 1).ToString()).ToString();
+
+            //display current cell name
+            nameBox.Text = IntToString(prevCol)+(prevRow + 1).ToString();
+
+            //display current cell contents
+            contentsBox.Text = ss.GetCellContents(IntToString(prevCol) + (prevRow + 1).ToString()).ToString();
+            //cursor starts at end of line
+            contentsBox.Select(contentsBox.TextLength, 0);
+        }
+        
+        /// <summary>
+        /// Triggered when File->New is clicked to open newwindow.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">a mouse click on File->New</param>
+        private void newToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            //creates new spreadsheet GUI on same thread
+            SpreadsheetApplicationContext.getAppContext().RunForm(new GUI());
+        }
+
+        /// <summary>
+        /// Waits for enter key to input contents of cell
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">user hits enter key</param>
+        private void contentsBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            //user hit enter and contents isn't empty
+            if (e.KeyCode == Keys.Enter && contentsBox.Text != "")
+            {
+                //determine current selected cell
+                spreadsheetPanel.GetSelection(out prevCol, out prevRow);
+
+                //set contents of cell
+                foreach (string name in ss.SetContentsOfCell(IntToString(prevCol) + (prevRow + 1).ToString(), contentsBox.Text))
+                {
+                    //get name
+                    int col = (int)name[0] % 32 - 1;
+                    int row;
+                    bool intParse = Int32.TryParse(name.Remove(0, 1), out row);
+
+                    //set display value
+                    spreadsheetPanel.SetValue(col, row - 1, ss.GetCellValue(name).ToString());
+                }
+
+                string value = ss.GetCellValue(IntToString(prevCol)+(prevRow + 1).ToString()).ToString();
+                //set display value to contents
+                spreadsheetPanel.SetValue(prevCol, prevRow, value);
+
+                //set display value
+                valueBox.Text = value;
+            }
+        }
+
+        /// <summary>
+        /// Converts integer to string for display purposes
+        /// </summary>
+        /// <param name="num">integer to convert to corresponding string</param>
+        /// <returns>string corresponding to integer</returns>
+        private String IntToString(int num)
+        {
+            Char c = (Char)(65 + num);
+            return c.ToString();
+        }
+
+        /// <summary>
+        /// Creates save file dialog window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">File->Save is clicked</param>
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog.FileName = "ps6.sprd";
+            saveFileDialog.Filter = "Spreadsheet files (*.sprd)|*.sprd|All files (*.*)|*.*";
+            saveFileDialog.ShowDialog();
+        }
+
+        /// <summary>
+        /// Recieves file name from save file dialog.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">user hits ok</param>
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            ss.Save(saveFileDialog.FileName);
+        }
+
+        /// <summary>
+        /// Creates open dialog window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">File->Open is clicked</param>
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //no changes that could be overwritten
+            if (ss.Changed != true)
+            {
+                openFileDialog.FileName = "";
+                openFileDialog.Filter = "Spreadsheet files (*.sprd)|*.sprd|All files (*.*)|*.*";
+                openFileDialog.ShowDialog();
+            }
+            else
+            {
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes in your spreadsheet. Would you like to save them?", "Spreadsheet", MessageBoxButtons.YesNoCancel);
+
+                //user wants to save changes
+                if (dialogResult == DialogResult.Yes)
+                {
+                    saveFileDialog.FileName = "ps6.sprd";
+                    saveFileDialog.Filter = "Spreadsheet files (*.sprd)|*.sprd|All files (*.*)|*.*";
+                    saveFileDialog.ShowDialog();
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    openFileDialog.FileName = "";
+                    openFileDialog.Filter = "Spreadsheet files (*.sprd)|*.sprd|All files (*.*)|*.*";
+                    openFileDialog.ShowDialog();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Recieves and uses file name from open file dialog.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">user selects file</param>
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            //empty current spreadsheet display
+            foreach (string name in ss.GetNamesOfAllNonemptyCells())
+            {
+                //get name
+                int col = (int)name[0] % 32 - 1;
+                int row;
+                bool intParse = Int32.TryParse(name.Remove(0, 1), out row);
+
+                //set display value
+                spreadsheetPanel.SetValue(col, row - 1, "");
+            }
+
+            //get data from file
+            ss = new Spreadsheet(openFileDialog.FileName,s => true, s => s, "ps6");
+
+            //load cell data
+            foreach (string name in ss.GetNamesOfAllNonemptyCells())
+            {
+                //get name
+                int col = (int)name[0] % 32 - 1;
+                int row;
+                bool intParse = Int32.TryParse(name.Remove(0,1) , out row);
+
+                //set display value
+                spreadsheetPanel.SetValue(col, row - 1, ss.GetCellValue(name).ToString());
+            }
+
+            //default selection is A1
+            spreadsheetPanel.SetSelection(0, 0);
+            nameBox.Text = "A1";
+            valueBox.Text = ss.GetCellValue("A1").ToString();
+            contentsBox.Text = ss.GetCellContents("A1").ToString();
+            //cursor starts at end of line
+            contentsBox.Select(contentsBox.TextLength, 0);
+        }
+
+        /// <summary>
+        /// Triggered when File->Close is clicked to close current window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">a mouse click on File->Close</param>
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// User closes window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">user hits close on window</param>
+        private void GUI_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //could result in loss of unsaved data
+            if (ss.Changed == true)
+            {
+                DialogResult dialogResult = MessageBox.Show("You have unsaved changes in your spreadsheet. Would you like to save them?", "Spreadsheet", MessageBoxButtons.YesNoCancel);
+
+                //user wants to save changes
+                if (dialogResult == DialogResult.Yes)
+                {
+                    saveFileDialog.FileName = "ps6.sprd";
+                    saveFileDialog.Filter = "Spreadsheet files (*.sprd)|*.sprd|All files (*.*)|*.*";
+                    saveFileDialog.ShowDialog();
+                }
+                //user wants to cancel closing
+                else if (dialogResult == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens help website for user.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">user clicks on Website->Help</param>
+        private void websiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("");
+        }
+    }
+}

@@ -1,0 +1,5 @@
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\GUITestProject\bin\Release\GUITestProject.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\GUITestProject\bin\Release\GUITestProject.pdb
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\GUITestProject\obj\Release\GUITestProject.csprojResolveAssemblyReference.cache
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\GUITestProject\obj\Release\GUITestProject.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\GUITestProject\obj\Release\GUITestProject.pdb

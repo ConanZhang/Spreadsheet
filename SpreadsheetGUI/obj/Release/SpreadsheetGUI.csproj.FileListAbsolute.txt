@@ -1,0 +1,17 @@
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetGUI.exe.config
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetGUI.exe
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetGUI.pdb
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\Spreadsheet.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetPanel.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\Formula.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetUtilities.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\Spreadsheet.pdb
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetPanel.xml
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\Formula.xml
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\bin\Release\SpreadsheetUtilities.xml
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.csprojResolveAssemblyReference.cache
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.GUI.resources
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.Properties.Resources.resources
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.csproj.GenerateResource.Cache
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.exe
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\SpreadsheetGUI\obj\Release\SpreadsheetGUI.pdb

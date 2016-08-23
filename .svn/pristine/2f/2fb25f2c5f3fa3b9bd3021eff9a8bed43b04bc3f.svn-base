@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Resources
+{
+    /// <summary>
+    /// Used to shut up Visual Studio. (Says resources needs main even though it's just a library.
+    /// </summary>
+    class ShutUpVisualStudio
+    {
+        static void Main(string[] args)
+        {
+        }
+    }
+}

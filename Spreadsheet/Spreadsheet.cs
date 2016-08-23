@@ -1,0 +1,682 @@
+﻿// Assignment implementation written by Conan Zhang, u0409453
+// for CS3500 Assignment #5. October, 2014.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SpreadsheetUtilities;
+using System.Text.RegularExpressions;
+using System.Xml;
+
+namespace SS
+{
+    /// <summary>
+    /// Spreadsheet class that creates inner class cells when necessary. Cells' dependencies on each other are
+    /// stored as well as you can set and get their values.
+    /// </summary>
+    public class Spreadsheet : AbstractSpreadsheet
+    {
+        //holds all cells
+        private Dictionary<string, Cell> cells;
+        //holds dependencies of cells
+        private DependencyGraph dependencies;
+
+        //says what accepted cell names are.
+        private Regex names;
+
+        //says whether or not spreadsheet has been changed from its original state
+        private Boolean changed;
+
+        /// <summary>
+        /// Constructor for zero arguments that creates an empty spreadsheet.
+        /// All variables are valid, names are normalized to themselves, and the version is "default".
+        /// </summary>
+        public Spreadsheet():
+            this(s => true, s => s, "default")
+        {
+
+        }
+
+        /// <summary>
+        /// Overload constructor creates an empty spreadsheet.
+        /// </summary>
+        /// <param name="isValid">delegate to check validity of variable</param>
+        /// <param name="normalize">delegate to normalize cell names</param>
+        /// <param name="version">version of spreadsheet</param>
+        public Spreadsheet(Func<string, bool> isValid, Func<string, string> normalize, string version): 
+            base(isValid, normalize, version)
+        {
+            cells = new Dictionary<string, Cell>();
+            dependencies = new DependencyGraph();
+            names = new Regex(@"^[a-zA-Z]+[0-9]+$");
+            changed = false;
+        }
+
+        /// <summary>
+        /// Overload constructor creates a reconstruction of a saved spreadsheet.
+        /// </summary>
+        /// <param name="path">file path to saved spreadsheet</param>
+        /// <param name="isValid">delegate to check validity of variable</param>
+        /// <param name="normalize">delegate to normalize cell names</param>
+        /// <param name="version">version of spreadsheet</param>
+        public Spreadsheet(string path, Func<string, bool> isValid, Func<string, string> normalize, string version) :
+            this(isValid, normalize, version)
+        {
+            if (Version == GetSavedVersion(path))
+            {
+                //read file from given path and create spreadsheet from it
+                try
+                {
+                    using (XmlReader reader = XmlReader.Create(path))
+                    {
+                        while (reader.Read())
+                        {
+                            //read xml data to create spreadsheet
+                            if (reader.IsStartElement() && reader.Name == "cell")
+                            {
+                                //get name
+                                reader.ReadToFollowing("name");
+                                reader.Read();
+                                string cellName = reader.Value;
+
+                                //get contents
+                                reader.ReadToFollowing("contents");
+                                reader.Read();
+                                string cellContents = reader.Value;
+
+                                //store in spreadsheet
+                                SetContentsOfCell(cellName, cellContents);
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    throw new SpreadsheetReadWriteException("Unable to read file from specified path \"" + path + "\".");
+                }
+            }
+            else
+            {
+                throw new SpreadsheetReadWriteException("Version \"" + Version + "\" did not match the version of the specified file.");
+            }
+            
+        }
+
+        /// <summary>
+        /// Get a list of all cells in the spreadsheet that aren't empty.
+        /// </summary>
+        /// <returns>A list</returns>
+        public override IEnumerable<string> GetNamesOfAllNonemptyCells()
+        {
+            return cells.Keys;
+        }
+
+        /// <summary>
+        /// Returns the contents of a specific cell.
+        /// </summary>
+        /// <param name="name">Name of cell to look in</param>
+        /// <returns>The contents of the name</returns>
+        public override object GetCellContents(string name)
+        {
+            if (name != null && names.IsMatch(name) && IsValid(Normalize(name)))
+            {
+                name = Normalize(name);//CHANGE TO PASS PS5 TEST: normalized name so the correct name is used
+
+                Cell c;
+                bool getValue = cells.TryGetValue(name, out c);
+
+                //in spreadsheet
+                if (getValue)
+                {
+                    if (c.Contents is Formula)
+                    {
+                        return "=" + c.Contents;
+                    }
+                    else
+                    {
+                        return c.Contents;
+                    }
+                }
+                //not in so return empty string
+                else
+                {
+                    return "";
+                }
+
+            }
+            else
+            {
+                throw new InvalidNameException();
+            }
+        }
+
+        /// <summary>
+        /// Returns value of cell
+        /// </summary>
+        /// <param name="name">cell to get value of</param>
+        /// <returns>value of cell</returns>
+        public override object GetCellValue(string name)
+        {
+            if (name != null && names.IsMatch(name) && IsValid(Normalize(name)))
+            {
+                Cell cell;
+                bool getValue = cells.TryGetValue(name, out cell);
+
+                //in spreadsheet
+                if (getValue)
+                {
+                    return cell.Value;
+                }
+                //not in so return empty string
+                else
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                throw new InvalidNameException();
+            }
+        }
+
+        /// <summary>
+        /// Used to determine which SetCellContents to call.
+        /// </summary>
+        /// <param name="name">name of cell</param>
+        /// <param name="content">content to be set</param>
+        /// <returns>cells that are affected by current cell</returns>
+        public override ISet<string> SetContentsOfCell(string name, string content)//CHANGE TO PASS PS5 TEST: Biggest functionality change is recalculating cells
+        {
+            if (content != null)
+            {
+                if (name != null && names.IsMatch(name) && IsValid(Normalize(name)))
+                {
+                    name = Normalize(name);
+                    Changed = true;
+
+                    double c;
+                    //content is double
+                    if (double.TryParse(content, out c))
+                    {
+                        HashSet<string> recalculate = (HashSet<string>)SetCellContents(name, c);
+                        //reevaluate cells from returned list
+                        foreach (string s in recalculate)
+                        {
+                            Cell cell;
+                            
+                            //in spreadsheet
+                            if (cells.TryGetValue(s, out cell))
+                            {
+                                //reevaluate
+                                if (cell.Contents is Formula)
+                                {
+                                    cell.Value = (cell.Contents as Formula).Evaluate(Lookup);
+                                }
+                            }
+                        }
+
+                        return recalculate;
+                    }
+                    //content is formula and not empty string
+                    else if (content != "" && content[0] == '=')
+                    {
+                        //get rid of '='
+                        content = content.Remove(0, 1);
+
+                        //formula could be incorrectly formatted or cause circular exception
+                        try
+                        {
+                            HashSet<string> recalculate = (HashSet<string>)SetCellContents(name, new Formula(content,Normalize,IsValid));//CHANGE TO PASS PS5 TEST: Formula recieves delegates
+                            //reevaluate cells from returned list
+                            foreach (string s in recalculate)
+                            {
+                                Cell cell;
+
+                                //in spreadsheet
+                                if (cells.TryGetValue(s, out cell))
+                                {
+                                    //reevaluate
+                                    if (cell.Contents is Formula)
+                                    {
+                                        cell.Value = (cell.Contents as Formula).Evaluate(Lookup);
+                                    }
+                                }
+                            }
+
+                            return recalculate;
+                        }
+                        catch
+                        {
+                            throw;
+                        }
+                    }
+                    //content is string
+                    else
+                    {
+                        HashSet<string> recalculate = (HashSet<string>)SetCellContents(name, content);
+                        //reevaluate cells from returned list
+                        foreach (string s in recalculate)
+                        {
+                            Cell cell;
+
+                            //in spreadsheet
+                            if (cells.TryGetValue(s, out cell))
+                            {
+                                //reevaluate
+                                if (cell.Contents is Formula)
+                                {
+                                    cell.Value = (cell.Contents as Formula).Evaluate(Lookup);
+                                }
+                            }
+                        }
+
+                        return recalculate;
+                    }
+                }
+                else
+                {
+                    throw new InvalidNameException();
+                }
+                
+            }
+            else
+            {
+                throw new ArgumentNullException();
+            }
+            
+        }
+
+        /// <summary>
+        /// Sets a cell's contents to a double.
+        /// </summary>
+        /// <param name="name">name of cell</param>
+        /// <param name="number">double to put in cell</param>
+        /// <returns>list of cells we need to recalculate because they were dependent</returns>
+        protected override ISet<string> SetCellContents(string name, double number)
+        {
+            Cell c;
+            bool getValue = cells.TryGetValue(name, out c);
+
+            //already in spreadsheet
+            if (getValue)
+            {
+                c.Contents = number;
+
+                //remove dependees
+                dependencies.ReplaceDependees(name, new HashSet<string>());
+
+                return new HashSet<string>(GetCellsToRecalculate(name));
+            }
+            //needs to be added
+            else
+            {
+                Cell cell = new Cell(name, number, Lookup);
+                cells.Add(name, cell);
+                return new HashSet<string>(GetCellsToRecalculate(name));
+            }
+        }
+
+        /// <summary>
+        /// Sets cell's contents to string.
+        /// </summary>
+        /// <param name="name">name of cell</param>
+        /// <param name="text">string to put into cell</param>
+        /// <returns>list of cells we need to recalculate because they were dependent</returns>
+        protected override ISet<string> SetCellContents(string name, string text)
+        {
+            Cell c;
+            bool getValue = cells.TryGetValue(name, out c);
+
+            //already in spreadsheet
+            if (getValue)
+            {
+                if (text == "")
+                {
+                    cells.Remove(name);
+                }
+                else
+                {
+                    c.Contents = text;
+                }
+
+                //remove dependees
+                dependencies.ReplaceDependees(name, new HashSet<string>());
+
+                return new HashSet<string>(GetCellsToRecalculate(name));
+            }
+            //needs to be added
+            else
+            {
+                if (text == "")
+                {
+                    cells.Remove(name);
+                }
+                else
+                {
+                    Cell cell = new Cell(name, text, Lookup);
+                    cells.Add(name, cell);
+                }
+                return new HashSet<string>(GetCellsToRecalculate(name));
+            }
+        }
+
+        /// <summary>
+        /// Sets cell's contents to formula.
+        /// </summary>
+        /// <param name="name">name of cell</param>
+        /// <param name="formula">formula to set in cell</param>
+        /// <returns>list of cells we need to recalculate because they were dependent</returns>
+        protected override ISet<string> SetCellContents(string name, Formula formula)
+        {
+            Cell c;
+            bool getValue = cells.TryGetValue(name, out c);
+
+            //already in spreadsheet
+            if (getValue)
+            {
+                //store contents just in case
+                Object saveContent = c.Contents;
+
+                //store dependees just in case
+                HashSet<string> saveDependees = (HashSet<string>)dependencies.GetDependees(name);
+
+                //only try to change contents as it may cause circular dependency
+                try
+                {
+                    c.Contents = formula;
+
+                    //add dependency
+                    dependencies.ReplaceDependees(name, formula.GetVariables());
+
+                    return new HashSet<string>(GetCellsToRecalculate(name));
+                }
+                //caused circular dependency, restore state and throw circular exception
+                catch
+                {
+                    //restore cells contents and dependencies
+                    c.Contents = saveContent;
+                    dependencies.ReplaceDependees(name, saveDependees);
+
+                    throw;
+                }
+                    
+            }
+            //needs to be added
+            else
+            {
+                //only try to change contents as it may cause circular dependency
+                try
+                {
+                    Cell cell = new Cell(name, formula, Lookup);
+                    cells.Add(name, cell);
+
+                    //add dependency
+                    dependencies.ReplaceDependees(name, formula.GetVariables());
+
+                    return new HashSet<string>(GetCellsToRecalculate(name));
+                }
+                //caused circular dependency, restore state (automatically) and throw circular exception
+                catch
+                {
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns dependents of a cell given.
+        /// </summary>
+        /// <param name="name">name of cell to get dependents of</param>
+        /// <returns>set of dependents</returns>
+        protected override IEnumerable<string> GetDirectDependents(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException();
+            }
+            else if (names.IsMatch(name) && IsValid(Normalize(name)))
+            {
+                return new HashSet<string>(dependencies.GetDependents(name));
+            }
+            else
+            {
+                throw new InvalidNameException();
+            }
+        }
+
+        /// <summary>
+        /// Boolean for state of spreadsheet.
+        /// </summary>
+        public override bool Changed
+        {
+            get
+            {
+                return changed;
+            }
+            protected set
+            {
+                changed = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets version information from specified file.
+        /// </summary>
+        /// <param name="filename">name of file to get version information</param>
+        /// <returns>version information of file</returns>
+        public override string GetSavedVersion(string filename)
+        {
+            try
+            {
+                using (XmlReader reader = XmlReader.Create(filename))
+                {
+                    //get version information
+                    reader.ReadToFollowing("spreadsheet");
+                    return reader["version"];
+                }
+            }
+            catch
+            {
+                throw new SpreadsheetReadWriteException("Unable to read file from specified path \"" + filename + "\".");
+            }
+        }
+
+        /// <summary>
+        /// Saves XML file documenting each cell name and its contents.
+        /// </summary>
+        /// <param name="filename">name to save xml file</param>
+        public override void Save(string filename)
+        {
+            try
+            {
+                using (XmlWriter writer = XmlWriter.Create(filename))//CHANGE TO PASS PS5 TEST: Got rid of + ".xml" here solved 3 tests.
+                {
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement("spreadsheet");
+                    writer.WriteAttributeString("version", Version);
+                    writer.WriteWhitespace("\n");
+
+                    foreach (Cell cell in cells.Values)
+                    {
+                        writer.WriteStartElement("cell");
+
+                        writer.WriteElementString("name", cell.Name);
+
+                        //contents are formula
+                        if (cell.Contents is Formula)
+                        {
+                            writer.WriteElementString("contents", "=" + cell.Contents.ToString());
+                        }
+                        //contents are string or double
+                        else
+                        {
+                            writer.WriteElementString("contents", cell.Contents.ToString());
+                        }
+
+                        writer.WriteEndElement();//cell
+                    }
+
+                    writer.WriteWhitespace("\n");
+                    writer.WriteEndElement();//spreadsheet
+                    writer.WriteEndDocument();
+
+                    Changed = false;
+                }
+            }
+            catch
+            {
+                throw new SpreadsheetReadWriteException("Unable to save \"" + filename + "\".");
+            }
+            
+        }
+
+        /// <summary>
+        /// Used to lookup cells a cell is dependent on for formula calculation.
+        /// </summary>
+        /// <param name="name">cell to look up value of</param>
+        /// <returns>value of cell</returns>
+        public double Lookup(string name)
+        {
+            Cell cell;
+
+            if (name != null && names.IsMatch(name) && IsValid(Normalize(name)))//CHANGE TO PASS PS5 TEST: made sure to check name before looking it up
+            {
+                name = Normalize(name);
+
+                //check if in dictionary
+                if (cells.TryGetValue(name, out cell))
+                {
+                    //check if double
+                    if (cell.Value is double)
+                    {
+                        return (double)cell.Value;
+                    }
+                    //value isn't double so can't use it in formula
+                    else
+                    {
+                        throw new ArgumentException("The value of cell \"" + name + "\" is not a double and therefore cannot be used in a formula.");
+                    }
+                }
+                //not in dictionary
+                else
+                {
+                    throw new ArgumentException("Argument \"" + name + "\" not found in data dictionary.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Argument \"" + name + "\" is not a valid name for a cell.");
+            }
+            
+        }
+
+        /// <summary>
+        /// Containers of the spreadsheet.
+        /// </summary>
+        private class Cell
+        {
+            private string cellName;
+            private object contents;
+            private object cellValue;
+
+            //takes in lookup from spreadsheet
+            private Func<string, double> lookup;
+
+            /// <summary>
+            /// Overload for double.
+            /// </summary>
+            /// <param name="name">name of cell</param>
+            /// <param name="content">a double</param>
+            /// <param name="_lookup">delegate used for evaluation</param>
+            public Cell(string name, double content, Func<string, double> _lookup)
+            {
+                cellName = name;
+                contents = content;
+                cellValue = contents;
+                lookup = _lookup;
+            }
+
+            /// <summary>
+            /// Overload for string.
+            /// </summary>
+            /// <param name="name">name of cell</param>
+            /// <param name="content">a string</param>
+            /// <param name="_lookup">delegate used for evaluation</param>
+            public Cell(string name, string content, Func<string, double> _lookup)
+            {
+                cellName = name;
+                contents = content;
+                cellValue = contents;
+                lookup = _lookup;
+
+            }
+
+            /// <summary>
+            /// Overload for formula.
+            /// </summary>
+            /// <param name="name">name of cell</param>
+            /// <param name="content">a formula</param>
+            /// <param name="_lookup">delegate used for evaluation</param>
+            public Cell(string name, Formula content, Func<string, double> _lookup)
+            {
+                cellName = name;
+                contents = content;
+                lookup = _lookup;
+                cellValue = content.Evaluate(lookup);
+            }
+
+            /// <summary>
+            /// Property for Cell to access private member contents.
+            /// </summary>
+            public object Contents
+            {
+                get
+                {
+                    return contents;
+                }
+                set
+                {
+                    contents = value;
+                    
+                    //update value as well
+                    if (value is Formula)
+                    {
+                        cellValue = (contents as Formula).Evaluate(lookup);
+                    }
+                    else
+                    {
+                        cellValue = contents;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Property for Cell to access private member cellValue.
+            /// </summary>
+            public object Value
+            {
+                get
+                {
+                    return cellValue;
+                }
+                set
+                {
+                    cellValue = value;
+                }
+            }
+
+            /// <summary>
+            /// Property for Cell to access private member cellName.
+            /// </summary>
+            public string Name
+            {
+                get
+                {
+                    return cellName;
+                }
+            }
+        }
+    }
+}

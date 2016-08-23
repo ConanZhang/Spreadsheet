@@ -1,0 +1,40 @@
+﻿Name: Conan Zhang
+Date: 10/7/2014
+	
+	10/7/2014: 1 hour. Set up PS5 and read documentation.
+	10/7/2014: 5 hours. Got all methods implemented except reading file for constructor with 4 parameters.
+	10/9/2014: 4 hours. Finished. (Code coverage, README, Testing, ext.)
+
+Misc:
+	I think this will take around 10 hours, after reading the documentation.
+
+Description:
+	Imports:
+		This spreadsheet solution imports a dependency graph and formula class. The dependency graph stores which cells
+		depend on other cells so we may update them when needed. The formula class is used whenever somebody puts a
+		formula into a cell in the form "=A1+B1" for example. This is necessary because formulas are seperate from the
+		other possibly values a cell can hold like a string or double.
+
+	Characteristics:
+		The spreadsheet itself stores infinite cells in a data structure (while utilizing the dependency graph). Of course
+		it does not really store infinite cells, but we should always be able to create a new cell when someone asks for it.
+
+		Cells are never explicitly created by a user. When they call SetContentsOfCell of a specifically named cell, the method
+		itself creates the Cell if necessary.
+
+	Uses:
+		You can get the names of all nonempty cells, get the contents of a cell, or set cells to a double, string, or Formula.
+
+		Each time a cell is updated, a function called GetCellsToRecalculate is called which recursively finds every cell that
+		has a direct or indirect relationship to the cell you changed. This function also will return a CircularException if
+		it detects a formula you input would cause one.
+
+	Inner Class:
+		The Spreadsheet.cs class has an inner private class Cell which is created everytime someone calls SetsCellContents.
+		This cell holds its name and contents. It also holds a value which is what the contents can be evaluated to
+		(if the cell had a formula as its contents for example).
+
+	Opening/Saving:
+		The spreadsheet can be built off a preexisting XML file with names and contents of cells or it can be initiated as a
+		new empty spreadsheet. Any time SetContentsOfCell is called, the spreadsheet enters a "changed" state where it detects
+		there is a change to be saved. After a save has occured, the "changed" state of the spreadsheet reverts back to normal.

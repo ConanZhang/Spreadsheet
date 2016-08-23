@@ -1,0 +1,618 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SpreadsheetTests</name>
+    </assembly>
+    <members>
+        <member name="T:SpreadsheetTests.SpreadsheetUnitTest">
+            <summary>
+            Tests Spreadsheet.cs
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Initialize">
+            <summary>
+            Set default values for every test.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.ValidNames">
+            <summary>
+            Check for names that are valid.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName1">
+            <summary>
+            Check for names that are invalid.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName2">
+            <summary>
+            Check for names that are invalid.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName3">
+            <summary>
+            Check for names that are invalid.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell1">
+            <summary>
+            Incorrect formula format.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell2">
+            <summary>
+            Should cause circular dependency.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell3">
+            <summary>
+            Should return correct set.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell4">
+            <summary>
+            Setting content to null.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell5">
+            <summary>
+            Setting content with null name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell6">
+            <summary>
+            Setting content with new formula should reevaluate value.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell7">
+            <summary>
+            Setting content with null name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetContentsOfCell8">
+            <summary>
+            Setting content to empty string.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue1">
+            <summary>
+            Invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue2">
+            <summary>
+            Null name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue3">
+            <summary>
+            Correct value returned.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue4">
+            <summary>
+            Correct value returned.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue5">
+            <summary>
+            Formula error returned.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue6">
+            <summary>
+            Sheet 3 read.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellValue7l">
+            <summary>
+            Get value of empty cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Changed1">
+            <summary>
+            Sees default spreadsheet changed value.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Changed2">
+            <summary>
+            Sees spreadsheet changed after setting cell of contents.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Changed3">
+            <summary>
+            Sees spreadsheet changed after setting cell of contents and saving.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Save1">
+            <summary>
+            Tests save method with different contents.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetSavedVersion1">
+            <summary>
+            Tests save method with different contents.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetSavedVersion2">
+            <summary>
+            Tests for trying to read from nonexistent file.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.ValidCellNames">
+            <summary>
+            Check for names that are valid.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName4">
+            <summary>
+            Check for invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName5">
+            <summary>
+            Check for invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName6">
+            <summary>
+            Check for invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.InvalidName7">
+            <summary>
+            Check for invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetNonEmpty">
+            <summary>
+            Get all nonempty cells.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellContents1">
+            <summary>
+            Get contents of null cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellContents2">
+            <summary>
+            Get contents of invalid cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetCellContents3">
+            <summary>
+            Get contents of cell that didn't exist.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellDouble1">
+            <summary>
+            Set contents of null cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellDouble2">
+            <summary>
+            Set contents of invalid cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellDouble3">
+            <summary>
+            Should return correct set.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellString1">
+            <summary>
+            Set contents of cell with null.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellString2">
+            <summary>
+            Set contents of null cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellString3">
+            <summary>
+            Set contents of invalid cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellString4">
+            <summary>
+            Should return correct set.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula1">
+            <summary>
+            Set contents of cell with null.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula2">
+            <summary>
+            Set contents of null cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula3">
+            <summary>
+            Set contents of invalid cell.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula4">
+            <summary>
+            Circular dependency from inserted formula.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula5">
+            <summary>
+            Should return correct set.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellFormula6">
+            <summary>
+            Should return correct set.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SetCellTwice">
+            <summary>
+            Should return correct set after setting cells again.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetDirectDependents1">
+            <summary>
+            Get dependents of null name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetDirectDependents2">
+            <summary>
+            Get dependents of invalid name.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.GetDirectDependents3">
+            <summary>
+            Get correct dependents.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.CircularDependency1">
+            <summary>
+            Circular dependency3
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Validate(System.String)">
+            <summary>
+            Delegate for checking valid variable.
+            </summary>
+            <param name="s">String to normalize.</param>
+            <returns>The normalized version of the variable.</returns>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.VV(SS.AbstractSpreadsheet,System.Object[])">
+            <summary>
+            Verifies cells and their values, which must alternate.
+            </summary>
+            <param name="sheet"></param>
+            <param name="constraints"></param>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Set(SS.AbstractSpreadsheet,System.String,System.String)">
+            <summary>
+            For setting a spreadsheet cell.
+            </summary>
+            <param name="sheet"></param>
+            <param name="name"></param>
+            <param name="contents"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.IsValidTest1">
+            <summary>
+            Tests IsValid
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.IsValidTest2">
+            <summary>
+            Tests IsValid
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.IsValidTest3">
+            <summary>
+            Tests IsValid
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.IsValidTest4">
+            <summary>
+            Tests IsValid
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NormalizeTest1">
+            <summary>
+            Tests Normalize
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NormalizeTest2">
+            <summary>
+            Tests Normalize
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NormalizeTest3">
+            <summary>
+            Tests Normalize
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NormalizeTest4">
+            <summary>
+            Tests Normalize
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.EmptySheet">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneString">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneString(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneNumber">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneNumber(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneFormula">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.OneFormula(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Changed">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.DivisionByZero1">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.DivisionByZero1(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.DivisionByZero2">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.DivisionByZero2(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.EmptyArgument">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.EmptyArgument(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.StringArgument">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.StringArgument(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.ErrorArgument">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.ErrorArgument(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NumberFormula1">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NumberFormula1(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NumberFormula2">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.NumberFormula2(SS.AbstractSpreadsheet)">
+            <summary>
+            Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.RepeatSimpleTests">
+            <summary>
+            Repeated Simple Tests
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formulas">
+            <summary>
+            Formula
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formulas(SS.AbstractSpreadsheet)">
+            <summary>
+            Formula
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formulasa">
+            <summary>
+            Formula
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formulasb">
+            <summary>
+            Formula
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Multiple">
+            <summary>
+            Multiple
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Multiplea">
+            <summary>
+            Multiple
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Multipleb">
+            <summary>
+            Multiple
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Multiplec">
+            <summary>
+            Multiple
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest1">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest2">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest3">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest4">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest5">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest6">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest7">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.SaveTest8">
+            <summary>
+            Reading/writing spreadsheets
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula1">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula1(SS.AbstractSpreadsheet)">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula2">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula2(SS.AbstractSpreadsheet)">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula3">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula3(SS.AbstractSpreadsheet)">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula4">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.Formula4a">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.MediumSheet">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.MediumSheet(SS.AbstractSpreadsheet)">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.MediumSheeta">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.MediumSave">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.MediumSavea">
+            <summary>
+            Fun with formulas
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.LongFormulaTest">
+            <summary>
+            A long chained formula.  If this doesn't finish within 60 seconds, it fails.
+            </summary>
+        </member>
+        <member name="M:SpreadsheetTests.SpreadsheetUnitTest.LongFormulaHelper(System.Object@)">
+            <summary>
+            PS5 Grading Test.
+            </summary>
+            <param name="result"></param>
+        </member>
+        <member name="P:SpreadsheetTests.SpreadsheetUnitTest.TestContext">
+             <summary>
+            Gets or sets the test context which provides
+            information about and functionality for the current test run.
+            </summary>
+        </member>
+    </members>
+</doc>

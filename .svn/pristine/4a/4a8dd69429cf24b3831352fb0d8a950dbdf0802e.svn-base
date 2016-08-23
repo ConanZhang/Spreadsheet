@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using SS;
+
+namespace SpreadsheetGUI
+{
+    /// <summary>
+    /// Main code for spreadsheet GUI operation.
+    /// </summary>
+    public partial class GUI : Form
+    {
+        //data structure behind GUI
+        Spreadsheet ss;
+
+        /// <summary>
+        /// GUI constructor.
+        /// </summary>
+        public GUI()
+        {
+            InitializeComponent();
+            
+            ss = new Spreadsheet();
+
+            //add functionality for when user selects cell
+            spreadsheetPanel1.SelectionChanged += recieveInput;
+
+            //default selection is A1
+            spreadsheetPanel1.SetSelection(0, 0);
+        }
+
+        /// <summary>
+        /// Actions for when a cell is selected
+        /// </summary>
+        /// <param name="ss">spread sheet that selected cell is in</param>
+        private void recieveInput(SpreadsheetPanel ssp)
+        {
+            //determine current selected cell
+            int row, col;
+            String value;
+            ssp.GetSelection(out col, out row);
+            ssp.GetValue(col, row, out value);
+
+            if (value == "")
+            {
+                ssp.SetValue(col, row, DateTime.Now.ToLocalTime().ToString("T"));
+            }
+        }
+
+        /// <summary>
+        /// Triggered when File->Close is clicked to close current window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">a mouse click on File->Close</param>
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// Triggered when File->New is clicked to open newwindow.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">a mouse click on File->New</param>
+        private void newToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            //creates new spreadsheet GUI on same thread
+            SpreadsheetApplicationContext.getAppContext().RunForm(new GUI());
+        }
+    }
+}

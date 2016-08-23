@@ -1,0 +1,7 @@
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\bin\Debug\Resources.XML
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\bin\Debug\Resources.pdb
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\obj\Debug\Resources.csprojResolveAssemblyReference.cache
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\obj\Debug\Resources.pdb
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\bin\Debug\Resources.dll.config
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\bin\Debug\Resources.dll
+C:\Users\conanz\Documents\CS3500\Assignments\PS6\Resources\obj\Debug\Resources.dll
